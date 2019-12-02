@@ -1,5 +1,5 @@
 # 제목
-* 쇼핑몰 (BAEKJOON_17612번)2
+* 쇼핑몰 (BAEKJOON_17612번)
 
 # 유형
 * not yet solved
