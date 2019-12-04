@@ -1,74 +1,73 @@
 #include <stdio.h>
-
+#include <queue>
 #define MAX_NUM 100001
 #define MAX_ITEM 20
+
+using namespace std;
+
 typedef struct _Person{
 	int number = 0;
 	int item = 0;
+	int counter = 0;
 } Person;
 
+struct cmp
+{
+	bool operator()(Person a, Person b)
+	{
+		bool ret;
+		
+		if(a.item == b.item) // if item is equal, bigger counter value
+		{
+			return (a.counter < b.counter ? true : false);
+		}
+		else // else smaller item value 
+		{
+			return (a.item > b.item ? true : false);
+		}
+	}
+};
+
+priority_queue<Person, vector<Person>, cmp> out;
+
 int N, K;
-Person counter[MAX_NUM];
 Person customer[MAX_NUM];
-int out[MAX_NUM] = {0, };
+int outNumber[MAX_NUM] = {0, };
 
 void solve()
 {
 	int idx_people = 1;
 	int idx_out = 1;
 	
-	while(idx_people <= N) // while customer input
+	for(idx_people = 1 ; idx_people<=K; idx_people++)
 	{
-		int idx_counter = 1;
-		int min = 20;
+		customer[idx_people].counter = idx_people;
+		out.push(customer[idx_people]);
+	}
 
-		// O(N^2)
-		// check to empty space and compare min value
-		while(idx_counter <= K) 
+	while(!out.empty())
+	{
+		Person oldPeople = out.top();
+		out.pop();
+		
+		outNumber[idx_out++] = oldPeople.number; // customer out	
+		
+		for(int i = 1; i<idx_people; i++)
 		{
-			if(counter[idx_counter].item == 0) break;
-			
-			if(counter[idx_counter].item < min) min = counter[idx_counter].item;
-			idx_counter++;
+			customer[i].item -= oldPeople.item;
 		}
 		
-		if(idx_counter <= K) // if it is not full
-		{
-			counter[idx_counter] = customer[idx_people];
+		if(idx_people <= N) // customer in
+		{		
+			customer[idx_people].counter = oldPeople.counter;
+			out.push(customer[idx_people]);
 			idx_people++;
-		}
-		else 
-		{
-			for(int i = K; i > 0; i--) // search from behind to front with subtract the min value
-			{
-				counter[i].item -= min;
-				if(counter[i].item == 0)
-				{
-					out[idx_out++] = counter[i].number;
-					counter[i].number = 0;
-				}
-			}
 		}
 	}
 	
-	while(idx_out <= N) // Until all the customer are gone.
+	for(int i = 1 ; i<=N; i++)
 	{
-		int min = 20;
-		for(int i = 1 ; i <= K; i++)
-		{
-			if(counter[i].item <= 0) continue;
-			else if(counter[i].item < min) min = counter[i].item;
-		}
-		
-		for(int i = K; i > 0; i--)
-		{
-			counter[i].item -= min;
-			if(counter[i].item == 0)
-			{
-				out[idx_out++] = counter[i].number;
-				counter[i].number = 0;
-			}
-		}
+		printf("%d = %d \n", i, outNumber[i]);
 	}
 }
 
@@ -78,7 +77,7 @@ void calc() // calculate out array
 	
 	for(int i = 1; i<=N; i++)
 	{
-		res += i*out[i];
+		res += i*outNumber[i];
 	}
 	printf("%llu", res);
 }
