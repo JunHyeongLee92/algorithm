@@ -14,4 +14,5 @@
 * 2019-12-17
 
 # 출처
+* 카카오 코드 페스티벌 2018 예선 A번
 * https://www.acmicpc.net/problem/15953
