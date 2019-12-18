@@ -7,62 +7,52 @@ double arr[MAX_NUM];
 
 int idx;
 double res;
+double min = 0x7fffffffffffffff;
 
-void solve()
+void solve(int cnt)
 {
 	int start = 0;
-	int end = K-1;
-	double m_avg = 0;
+	int end = cnt-1;
 	double total = 0;
+	double m_avg = 0;
 	double m_sum = 0;
 	
-	double min = 0x7fffffffffffffff;
 	int minIdx = start;
-	int cnt;
 	
-	while(start <= N - K)
+	for(int i = start; i <= end; i++)
 	{
-		cnt = K;
-		for(int i = start; i <= end; i++)
-		{
-			total += arr[i];
-		}
+		total += arr[i];
+	}
+	m_avg = total/cnt;
+	
+	for(int i = start; i <= end; i++)
+	{
+		m_sum = m_sum + pow((m_avg - arr[i]), 2);
+	}
+	end++;
+	if(m_sum < min) min = m_sum;
+	
+	while(end < N)
+	{
+		double temp = 0;
+		total = total - arr[start++] + arr[end];
 		m_avg = total/cnt;
 		
 		for(int i = start; i <= end; i++)
 		{
-			m_sum = m_sum + pow((m_avg - arr[i]), 2);
+			temp = temp + pow((m_avg - arr[i]), 2);
 		}
-		
-		printf("start = %d end = %d m_avg = %lf m_sum = %lf\n", start, end, m_avg, m_sum);
+		if(temp < min)
+		{	
+			min = temp;
+			minIdx = start;
+		}
 		end++;
-		while(end < N)
-		{
-			double temp = 0;
-			
-			cnt++;
-			total = total + arr[end];
-			m_avg = total/cnt;
-			
-			for(int i = start; i <= end; i++)
-			{
-				temp = temp + pow((m_avg - arr[i]), 2);
-			}
-			if(temp < min)
-			{	
-				min = temp;
-				minIdx = start;
-			}
-			printf("start = %d end = %d m_avg = %lf m_sum = %lf\n", start, end, m_avg, m_sum);
-			end++;
-		}
-		start++;
 	}
-	
+
 	res = min;
 	idx = minIdx;
 }
-
 int main(void)
 {
 	scanf("%d %d", &N, &K);
@@ -72,9 +62,12 @@ int main(void)
 		scanf("%lf", &arr[i]);
 	}
 	
-	solve();
+	for(int i = K; i <= N; i++)
+	{
+		solve(i);
+	}
 	
-	printf("%0.11lf\n", sqrt(res/K));
+	printf("%0.11lf", sqrt(res/K));
 	
 	return 0;
 }
