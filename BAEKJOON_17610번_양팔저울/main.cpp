@@ -36,7 +36,6 @@ int main(void)
 	}
 		
 	dfs(0, 0);
-
 	printf("%d", S - cnt);
 	return 0;
 }
