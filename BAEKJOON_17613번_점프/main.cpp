@@ -1,73 +1,57 @@
 #include <stdio.h>
-#include <math.h>
-#define MAX_NUM 501
 
-int N, K;
-double arr[MAX_NUM];
+#define MAX_SIZE 100000001
 
-int idx;
-double res;
-double min = 0x7fffffffffffffff;
+#define MIN(X, Y) ((X < Y) ? X : Y)
+#define MAX(X, Y) ((X > Y) ? X : Y)
 
-void solve(int cnt)
+int x, y;
+int dp[MAX_SIZE] = {0, };
+
+int jump(int start, int end)
 {
-	int start = 0;
-	int end = cnt-1;
-	double total = 0;
-	double m_avg = 0;
-	double m_sum = 0;
-	
-	int minIdx = start;
-	
-	for(int i = start; i <= end; i++)
+	if(dp[end] != 0) return dp[end];
+	else
 	{
-		total += arr[i];
-	}
-	m_avg = total/cnt;
-	
-	for(int i = start; i <= end; i++)
-	{
-		m_sum = m_sum + pow((m_avg - arr[i]), 2);
-	}
-	end++;
-	if(m_sum < min) min = m_sum;
-	
-	while(end < N)
-	{
-		double temp = 0;
-		total = total - arr[start++] + arr[end];
-		m_avg = total/cnt;
-		
-		for(int i = start; i <= end; i++)
+		for(int i = 1; i <= end; i++)
 		{
-			temp = temp + pow((m_avg - arr[i]), 2);
+			dp[i] = 0x7fffffff;
+			
+			int mul = 2;
+			int cnt = 1;
+			
+			while((mul - 1) <= i)
+			{
+				dp[i] = MIN(dp[i - (mul - 1)] + cnt, dp[i]);
+				mul *= 2;
+				cnt += 1;
+			}
 		}
-		if(temp < min)
-		{	
-			min = temp;
-			minIdx = start;
-		}
-		end++;
 	}
-
-	res = min;
-	idx = minIdx;
+	
+	int ret = 0;
+	for(int i = start; i <= end; i++)
+	{
+		ret = MAX(ret, dp[i]);	
+	}
+	return ret;
 }
+
 int main(void)
 {
-	scanf("%d %d", &N, &K);
+	int T;
+	scanf("%d", &T);
 		
-	for(int i = 0 ; i < N ; i++)
+	for(int i = 0 ; i < T; i++)
 	{
-		scanf("%lf", &arr[i]);
+		scanf("%d %d", &x ,&y);
+		printf("%d\n", jump(x, y));
+		
+//		for(int j = 0; j<=y; j++)
+//		{
+//			printf("%d ", dp[j]);
+//		}printf("\n");
 	}
-	
-	for(int i = K; i <= N; i++)
-	{
-		solve(i);
-	}
-	
-	printf("%0.11lf", sqrt(res/K));
 	
 	return 0;
 }
